@@ -1,0 +1,105 @@
+import 'package:camera/camera.dart';
+import 'package:flutter/material.dart';
+import 'package:shampic/home.dart';
+import 'package:shampic/scan.dart';
+
+class CameraContainer {
+  static late List<CameraDescription> cameras;
+}
+
+Future<void> main() async{
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  CameraContainer.cameras = await availableCameras();
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Shampic',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+        scaffoldBackgroundColor: Theme.of(context).colorScheme.background,
+      ),
+      darkTheme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark),
+          brightness: Brightness.dark
+      ),
+
+      home: const BottomNavigation(),
+    );
+  }
+}
+
+class BottomNavigation extends StatefulWidget {
+  const BottomNavigation({super.key});
+
+
+  @override
+  State<BottomNavigation> createState() => _BottomNavigationState();
+}
+
+class _BottomNavigationState extends State<BottomNavigation> {
+
+  int selectedIndex = 1;
+  final pageViewController = PageController(initialPage: 2);
+
+
+  static const List<Widget> widgetOptions = <Widget>[
+    Scan(),
+    Photo()
+  ];
+
+  void onItemTapped(int index) {
+    pageViewController.animateToPage(index, duration: Duration(milliseconds: 100), curve: Curves.easeInOut);
+  }
+
+  @override
+  void dispose() {
+    pageViewController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text("Shambot Photos"),
+      ),
+      body: PageView(
+        controller: pageViewController,
+        children: widgetOptions,
+        onPageChanged: (index) {
+          setState(() {
+            selectedIndex = index;
+          });
+        },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+              icon: Icon(Icons.qr_code),
+              label: "QR Code"
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.camera_alt),
+              label: "Home"
+          ),
+        ],
+        currentIndex: selectedIndex,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Theme.of(context).colorScheme.onBackground,
+        unselectedLabelStyle: TextStyle(color: Theme.of(context).colorScheme.onBackground),
+        onTap: onItemTapped,
+      ),
+    );
+  }
+}
