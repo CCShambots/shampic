@@ -23,6 +23,8 @@ class ScanState
   bool showModal = false;
   bool modalOpen = false;
 
+  String modalText = "";
+
   Future<void> onDetect(BarcodeCapture barcode) async {
     capture = barcode;
     setState(() => this.barcode = barcode.barcodes.first);
@@ -34,16 +36,28 @@ class ScanState
 
     String codeData = barcode.barcodes.first.displayValue!;
 
-    if(!showModal && codeData.contains("pho:")) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-      String saveVal = codeData.substring(4);
+    if(!showModal) {
+      if(codeData.contains("pho:")) {
+        String saveVal = codeData.substring(4);
 
-      prefs.setStringList("teams", saveVal.split(","));
+        prefs.setStringList("teams", saveVal.split(","));
 
-      setState(() {
-        showModal = true;
-      });
+        setState(() {
+          showModal = true;
+          modalText = "Loaded your team assignments!";
+        });
+      } else if(codeData.contains("api:")) {
+        String saveVal = codeData.substring(4);
+
+        prefs.setString("api", saveVal);
+
+        setState(() {
+          showModal = true;
+          modalText = "Loaded the remote API location!";
+        });
+      }
     }
 
   }
@@ -53,7 +67,7 @@ class ScanState
   void openModal(BuildContext context) {
     showDialog(context: context, builder: (BuildContext context) =>
         AlertDialog(
-            content: const Text("Loaded your team assignments!"),
+            content: Text(modalText),
             actions: <TextButton>[
               TextButton(
                   onPressed: () {

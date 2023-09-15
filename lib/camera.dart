@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' as io;
 import 'dart:typed_data';
 
@@ -126,19 +127,23 @@ class DisplayPictureScreen extends StatefulWidget {
 class DisplayPictureScreenState extends State<DisplayPictureScreen> {
   List<String> teams = [];
 
+  String apiBase = "";
+
   @override
   void initState() {
     super.initState();
-    loadTeams();
+    loadData();
   }
 
-  Future<void> loadTeams() async {
+  Future<void> loadData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     setState(() {
       teams = prefs.getStringList("teams")!;
+      apiBase = prefs.getString("api")!;
     });
   }
+
 
   Future<void> removeTeam(String teamToPop) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -177,27 +182,25 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
                 onPressed: () async {
                   Uint8List bytes =  io.File(widget.imagePath).readAsBytesSync();
 
-                  http.Response status = await http.get(Uri.parse("http://192.168.22.41:8080/status"));
+                  http.Response getResponse = await http.get(Uri.parse("${apiBase}bytes/get"));
 
-                  print(status.statusCode);
-                  
-                  Uri target = Uri.parse("http://192.168.22.41:8080/bytes/submit/key/${widget.number}-img");
+                  List<dynamic> existingKeysDynamic = jsonDecode(getResponse.body);
 
-                  http.Response response = await http.put(target, body: bytes);
+                  List<String> existingKeys = existingKeysDynamic.map((e) => e as String).toList();
+
+                  bool alreadyExists = existingKeys.contains("${widget.number}-img");
+
+                  Uri target = Uri.parse("${apiBase}bytes/${alreadyExists ? "edit" : "submit"}/key/${widget.number}-img");
+
+                  http.Response response = await (alreadyExists ? http.put(target, body: bytes) : http.post(target, body: bytes));
 
                   if(response.statusCode == 200) {
                     removeTeam(widget.number);
                     if(mounted) {
                       Navigator.of(context).pop();
+                      Future.delayed(Duration.zero, () => Navigator.of(context).pop());
                     }
                   }
-
-                  print(target.path);
-                  print(response.body);
-                  print(response.statusCode);
-                  print(bytes);
-
-                  print(widget.imagePath);
                 },
                 heroTag: "btn2",
                 child: const Icon(Icons.save),

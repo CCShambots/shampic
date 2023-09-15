@@ -46,19 +46,20 @@ class PhotoState extends State<Photo> {
 
               children:
               teams.map((e) =>
-                  Container(
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => Camera(number: e, camera: CameraContainer.cameras.first,)))
+                        .then((value) {
+                      loadTeams();
+                    });
+                  },
+                  child: Container(
                     color: Theme.of(context).colorScheme.inversePrimary,
                     child: Center(
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                                textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 48)
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(builder: (context) => Camera(number: e, camera: CameraContainer.cameras.first,)));
-                            },
-                            child: Text(e),),
+                          child: Text(e, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 48)),
                     )
-                  )
+                  ),
+                )
               ).toList()
               ,
             ),
