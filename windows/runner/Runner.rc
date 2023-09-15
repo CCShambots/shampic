@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.ccshambots" "\0"
-            VALUE "FileDescription", "shambot_photos" "\0"
+            VALUE "FileDescription", "sham_pic" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "shambot_photos" "\0"
+            VALUE "InternalName", "sham_pic" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2023 com.ccshambots. All rights reserved." "\0"
             VALUE "OriginalFilename", "shambot_photos.exe" "\0"
-            VALUE "ProductName", "shambot_photos" "\0"
+            VALUE "ProductName", "sham_pic" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
