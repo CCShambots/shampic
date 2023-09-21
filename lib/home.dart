@@ -26,9 +26,11 @@ class PhotoState extends State<Photo> {
   Future<void> loadTeams() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    setState(() {
-      teams = prefs.getStringList("teams")!;
-    });
+    if(mounted) {
+      setState(() {
+        teams = prefs.getStringList("teams") ?? [];
+      });
+    }
   }
 
   @override

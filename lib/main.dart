@@ -1,8 +1,50 @@
+import 'dart:async';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shampic/home.dart';
 import 'package:shampic/scan.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+
+class ConnectionStatus {
+  static bool connected = false;
+
+  static const connectionInterval = Duration(seconds: 5);
+
+
+  static checkConnection() async{
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String apiBase = prefs.getString("api") ?? "";
+
+    //Set the default API location
+    if(apiBase == "") {
+      apiBase = 'http://167.71.240.213:8080/';
+
+      prefs.setString("api", apiBase);
+    }
+
+    var url = Uri.parse("${apiBase}status");
+
+    try {
+      var response = await http.get(url).timeout(const Duration(seconds: 5), onTimeout: () {
+        return http.Response('Disconnected Error', 408);
+      });
+
+      bool success = response.statusCode == 200;
+
+      ConnectionStatus.connected = success;
+
+    } catch(e) {
+      ConnectionStatus.connected = false;
+    }
+  }
+
+}
 
 class CameraContainer {
   static late List<CameraDescription> cameras;
@@ -14,6 +56,10 @@ Future<void> main() async{
 
   CameraContainer.cameras = await availableCameras();
   runApp(const MyApp());
+
+  //Regularly check the api connection
+
+  Timer.periodic(ConnectionStatus.connectionInterval, (timer) {ConnectionStatus.checkConnection();});
 }
 
 class MyApp extends StatelessWidget {
@@ -55,6 +101,24 @@ class _BottomNavigationState extends State<BottomNavigation> {
   int selectedIndex = 1;
   final pageViewController = PageController(initialPage: 2);
 
+  bool connection = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(const Duration(seconds: 2), () {
+      setState(() {
+        connection = ConnectionStatus.connected;
+      });
+    });
+
+    Timer.periodic(ConnectionStatus.connectionInterval, (timer) {
+      setState(() {
+        connection = ConnectionStatus.connected;
+      });
+    });
+  }
 
   static const List<Widget> widgetOptions = <Widget>[
     Scan(),
@@ -76,7 +140,17 @@ class _BottomNavigationState extends State<BottomNavigation> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("Shambot Photos"),
+        title: const Text("ShamPic"),
+        actions: [
+          IconButton(
+            icon: Icon(
+              connection ? Icons.cloud_done : Icons.cloud_off,
+              color: connection ? Colors.green : Colors.red,
+            ),
+            tooltip: connection ? "API Connected" : "API Disconnected",
+            onPressed: null,
+          )
+        ],
       ),
       body: PageView(
         controller: pageViewController,
