@@ -56,7 +56,10 @@ class PhotoState extends State<Photo> {
                     });
                   },
                   child: Container(
-                    color: Theme.of(context).colorScheme.inversePrimary,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(12)),
+                      color: Theme.of(context).colorScheme.inversePrimary
+                    ),
                     child: Center(
                           child: Text(e, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 48)),
                     )

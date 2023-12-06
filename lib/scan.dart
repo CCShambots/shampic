@@ -30,15 +30,16 @@ class ScanState
     setState(() => this.barcode = barcode.barcodes.first);
 
 
-    if(await Vibration.hasVibrator() ?? false) {
-      Vibration.vibrate();
-    }
+    if(!modalOpen) {
 
-    String codeData = barcode.barcodes.first.displayValue!;
+      if(await Vibration.hasVibrator() ?? false) {
+        Vibration.vibrate();
+      }
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+      String codeData = barcode.barcodes.first.displayValue!;
 
-    if(!showModal) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
       if(codeData.contains("pho:")) {
         String saveVal = codeData.substring(4);
 
