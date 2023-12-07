@@ -1,0 +1,8 @@
+app-key=VW5M
+build-type=publication
+flutter=3.16.2
+minimal-ios-version=14.0
+app-version=1.4.1
+build-number=6
+mode=release
+target=lib/main.dart
