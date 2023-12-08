@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
     <key>NSCameraUsageDescription</key>
-    <string>Access the Camera to Take photos.</string>
+    <string>Access the Camera to Scan QR Codes and Take Robot Photos.</string>
     <key>NSMicrophoneUsageDescription</key>
-    <string>Access the Camera to Take photos.</string>
+    <string>Access the Camera to Scan QR Codes and Take Robot Photos.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
