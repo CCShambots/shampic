@@ -182,7 +182,7 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
                 onPressed: () async {
                   Uint8List bytes =  io.File(widget.imagePath).readAsBytesSync();
 
-                  http.Response getResponse = await http.get(Uri.parse("${apiBase}bytes/get"));
+                  http.Response getResponse = await http.get(Uri.parse("$apiBase/bytes/get"));
 
                   List<dynamic> existingKeysDynamic = jsonDecode(getResponse.body);
 
@@ -190,7 +190,7 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
 
                   bool alreadyExists = existingKeys.contains("${widget.number}-img");
 
-                  Uri target = Uri.parse("${apiBase}bytes/${alreadyExists ? "edit" : "submit"}/key/${widget.number}-img");
+                  Uri target = Uri.parse("$apiBase/bytes/${alreadyExists ? "edit" : "submit"}/key/${widget.number}-img");
 
                   http.Response response = await (alreadyExists ? http.put(target, body: bytes) : http.post(target, body: bytes));
 

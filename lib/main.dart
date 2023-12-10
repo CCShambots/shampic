@@ -23,12 +23,12 @@ class ConnectionStatus {
 
     //Set the default API location
     if(apiBase == "") {
-      apiBase = 'http://167.71.240.213:8080/';
+      apiBase = 'http://167.71.240.213:8080';
 
       prefs.setString("api", apiBase);
     }
 
-    var url = Uri.parse("${apiBase}status");
+    var url = Uri.parse("$apiBase/status");
 
     try {
       var response = await http.get(url).timeout(const Duration(seconds: 5), onTimeout: () {
