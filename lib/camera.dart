@@ -180,6 +180,10 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
               ),
               FloatingActionButton(
                 onPressed: () async {
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+                  String year = prefs.getString("year")!;
+
                   Uint8List bytes =  io.File(widget.imagePath).readAsBytesSync();
 
                   http.Response getResponse = await http.get(Uri.parse("$apiBase/bytes/get"));
@@ -188,9 +192,9 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
 
                   List<String> existingKeys = existingKeysDynamic.map((e) => e as String).toList();
 
-                  bool alreadyExists = existingKeys.contains("${widget.number}-img");
+                  bool alreadyExists = existingKeys.contains("${widget.number}-img-$year");
 
-                  Uri target = Uri.parse("$apiBase/bytes/${alreadyExists ? "edit" : "submit"}/key/${widget.number}-img");
+                  Uri target = Uri.parse("$apiBase/bytes/${alreadyExists ? "edit" : "submit"}/key/${widget.number}-img-$year");
 
                   http.Response response = await (alreadyExists ? http.put(target, body: bytes) : http.post(target, body: bytes));
 

@@ -43,7 +43,13 @@ class ScanState
       if(codeData.contains("pho:")) {
         String saveVal = codeData.substring(4);
 
-        prefs.setStringList("teams", saveVal.split(","));
+        List<String> splitVals = saveVal.split(";");
+
+        String year = splitVals[0];
+        String teams = splitVals[1];
+
+        prefs.setStringList("teams", teams.split(","));
+        prefs.setString("year", year);
 
         setState(() {
           showModal = true;

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shampic/home.dart';
 import 'package:shampic/scan.dart';
 import 'package:http/http.dart' as http;
@@ -103,9 +104,13 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   bool connection = false;
 
+  String version = "";
+
   @override
   void initState() {
     super.initState();
+
+    loadVersion();
 
     Future.delayed(const Duration(seconds: 2), () {
       setState(() {
@@ -117,6 +122,14 @@ class _BottomNavigationState extends State<BottomNavigation> {
       setState(() {
         connection = ConnectionStatus.connected;
       });
+    });
+  }
+
+  void loadVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+    setState(() {
+      version = packageInfo.version;
     });
   }
 
@@ -140,7 +153,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("ShamPic"),
+        title: Text("ShamPic - v$version"),
         actions: [
           IconButton(
             icon: Icon(
