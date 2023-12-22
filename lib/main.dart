@@ -153,7 +153,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("ShamPic - v$version"),
+        title: Text("ShamPic v$version"),
         actions: [
           IconButton(
             icon: Icon(
