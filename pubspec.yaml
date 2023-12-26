@@ -29,10 +29,11 @@ dependencies:
   camera: ^0.10.5+7
   package_info_plus: ^5.0.1
   http: ^0.13.4
+  camera_android: ^0.10.8+15
 
-dependency_overrides:
-  camera_android:
-    path: camera_android
+#dependency_overrides:
+#  camera_android:
+#    path: camera_android
 
 
 dev_dependencies:
