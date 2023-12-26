@@ -31,10 +31,6 @@ dependencies:
   http: ^0.13.4
   camera_android: ^0.10.8+15
 
-#dependency_overrides:
-#  camera_android:
-#    path: camera_android
-
 
 dev_dependencies:
   flutter_test:
