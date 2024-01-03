@@ -1,20 +1,23 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shampic/Session.dart';
 import 'package:shampic/home.dart';
 import 'package:shampic/scan.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 
 
 class ConnectionStatus {
   static bool connected = false;
+  static bool openBrowserForCookieGen = false;
 
   static const connectionInterval = Duration(seconds: 5);
-
 
   static checkConnection() async{
 
@@ -24,21 +27,43 @@ class ConnectionStatus {
 
     //Set the default API location
     if(apiBase == "") {
-      apiBase = 'http://167.71.240.213:8080';
+      apiBase = 'https://scout.voth.name:3000/protected';
 
       prefs.setString("api", apiBase);
     }
 
-    var url = Uri.parse("$apiBase/status");
+    var url = Uri.parse(apiBase);
 
     try {
-      var response = await http.get(url).timeout(const Duration(seconds: 5), onTimeout: () {
-        return http.Response('Disconnected Error', 408);
-      });
+      var client = HttpClient();
+      var request = await client.getUrl(url);
+      request.followRedirects = false;
 
-      bool success = response.statusCode == 200;
+      int responseCode =
+      !Session.cookieExists ?
+      (await request.close().timeout(const Duration(seconds: 5))).statusCode :
+      (await Session.get(apiBase)).statusCode;
 
-      ConnectionStatus.connected = success;
+
+      switch(responseCode) {
+        case 200:
+          //All good, ready to use
+          ConnectionStatus.connected = true;
+          openBrowserForCookieGen = false;
+          break;
+        case 401:
+          //Have invalid cookie, need to delete and reacquire
+          //TODO:
+          break;
+        case 303:
+          //Have no cookie, redirect user to page to generate
+          print("lack of cookie; going to redirect");
+          if(!openBrowserForCookieGen) {
+            await launchUrl(url);
+          }
+          openBrowserForCookieGen = true;
+          break;
+      }
 
     } catch(e) {
       ConnectionStatus.connected = false;
@@ -54,6 +79,8 @@ class CameraContainer {
 Future<void> main() async{
 
   WidgetsFlutterBinding.ensureInitialized();
+
+  Session.updateCookie();
 
   CameraContainer.cameras = await availableCameras();
   runApp(const MyApp());
@@ -104,6 +131,16 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   bool connection = false;
 
+  bool showCookieModal = false;
+  bool cookieModalOpen = false;
+
+  String code = "";
+
+  String email = "";
+  var emailController = TextEditingController();
+
+  String apiBase = "";
+
   String version = "";
 
   @override
@@ -111,17 +148,21 @@ class _BottomNavigationState extends State<BottomNavigation> {
     super.initState();
 
     loadVersion();
+    loadPrefs();
 
     Future.delayed(const Duration(seconds: 2), () {
-      setState(() {
-        connection = ConnectionStatus.connected;
-      });
+      handleConnectionCheckResult();
     });
 
     Timer.periodic(ConnectionStatus.connectionInterval, (timer) {
-      setState(() {
-        connection = ConnectionStatus.connected;
-      });
+      handleConnectionCheckResult();
+    });
+  }
+
+  void handleConnectionCheckResult() {
+    setState(() {
+      connection = ConnectionStatus.connected;
+      showCookieModal = ConnectionStatus.openBrowserForCookieGen;
     });
   }
 
@@ -130,6 +171,19 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
     setState(() {
       version = packageInfo.version;
+    });
+  }
+
+  void loadPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String email = prefs.getString("email") ?? "";
+    String apiBase = prefs.getString("api") ?? "";
+
+    emailController.text = email;
+
+    setState(() {
+      this.email = email;
+      this.apiBase = apiBase;
     });
   }
 
@@ -148,8 +202,88 @@ class _BottomNavigationState extends State<BottomNavigation> {
     super.dispose();
   }
 
+  void updateEmail(String newEmail) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    prefs.setString("email", newEmail);
+
+    setState(() {
+      email = newEmail;
+    });
+  }
+
+  void openModal(BuildContext context) {
+    showDialog(context: context, builder: (BuildContext context) =>
+        AlertDialog(
+            content:  Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text("Input Login info"),
+                TextField(
+                  decoration: const InputDecoration(
+                    border: UnderlineInputBorder(),
+                    labelText: 'Enter Email Address'
+                  ),
+                  controller: emailController,
+                  onChanged: (value) {
+                    updateEmail(value);
+                  },
+                ),
+                TextField(
+                  decoration: const InputDecoration(
+                      border: UnderlineInputBorder(),
+                      labelText: 'Enter One-Time Code'
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      code = value;
+                    });
+                  },
+                )
+              ],
+            ),
+            actions: <TextButton>[
+              TextButton(
+                  onPressed: () async {
+                    setState(() {
+                      cookieModalOpen = false;
+                      showCookieModal = false;
+                    });
+
+
+                    Uri url = Uri.parse("${apiBase.replaceAll("/protected", "")}/auth/$code/$email");
+
+                    http.Response resp = await http.get(url);
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    prefs.setString("jwt", resp.body);
+
+                    if(mounted) {
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Text('Submit')
+              )
+            ]
+        )).then((val) {
+      setState(() {
+        cookieModalOpen = false;
+        showCookieModal = false;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    if(showCookieModal && !cookieModalOpen) {
+      setState(() {
+        cookieModalOpen = true;
+      });
+
+      Future.delayed(Duration.zero, () {
+        openModal(context);
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,

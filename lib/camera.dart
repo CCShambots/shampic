@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shampic/Session.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -186,7 +187,7 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
 
                   Uint8List bytes =  io.File(widget.imagePath).readAsBytesSync();
 
-                  http.Response getResponse = await http.get(Uri.parse("$apiBase/bytes/get"));
+                  http.Response getResponse = await Session.get("$apiBase/bytes/");
 
                   List<dynamic> existingKeysDynamic = jsonDecode(getResponse.body);
 
@@ -194,9 +195,9 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
 
                   bool alreadyExists = existingKeys.contains("${widget.number}-img-$year");
 
-                  Uri target = Uri.parse("$apiBase/bytes/${alreadyExists ? "edit" : "submit"}/key/${widget.number}-img-$year");
+                  String target = "$apiBase/bytes/${widget.number}-img-$year";
 
-                  http.Response response = await (alreadyExists ? http.put(target, body: bytes) : http.post(target, body: bytes));
+                  http.Response response = await (alreadyExists ? Session.put(target, bytes) : Session.post(target, bytes));
 
                   if(response.statusCode == 200) {
                     removeTeam(widget.number);
