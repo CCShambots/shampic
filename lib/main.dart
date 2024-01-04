@@ -81,6 +81,9 @@ Future<void> main() async{
   //Regularly check the api connection
 
   Timer.periodic(ConnectionStatus.connectionInterval, (timer) {ConnectionStatus.checkConnection();});
+
+  //Check connection immediately at startup to better inform users
+  ConnectionStatus.checkConnection();
 }
 
 class MyApp extends StatelessWidget {
@@ -205,7 +208,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     });
   }
 
-  void openModal(BuildContext context) {
+  void openAuthModal(BuildContext context) {
     showDialog(context: context, builder: (BuildContext context) =>
         AlertDialog(
             content:  Column(
@@ -276,7 +279,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
       });
 
       Future.delayed(Duration.zero, () {
-        openModal(context);
+        openAuthModal(context);
       });
     }
 
