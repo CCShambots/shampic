@@ -197,7 +197,7 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
 
                   String target = "$apiBase/bytes/${widget.number}-img-$year";
 
-                  http.Response response = await (alreadyExists ? Session.put(target, bytes) : Session.post(target, bytes));
+                  http.Response response = await (alreadyExists ? Session.patch(target, bytes) : Session.post(target, bytes));
 
                   if(response.statusCode == 200) {
                     removeTeam(widget.number);

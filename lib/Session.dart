@@ -17,8 +17,8 @@ class Session {
     return response;
   }
 
-  static Future<http.Response> put(String url, dynamic data) async {
-    http.Response response = await http.put(Uri.parse(url), body: data, headers: headers);
+  static Future<http.Response> patch(String url, dynamic data) async {
+    http.Response response = await http.patch(Uri.parse(url), body: data, headers: headers);
     return response;
   }
 

@@ -12,7 +12,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 
-
 class ConnectionStatus {
   static bool connected = false;
   static bool openBrowserForCookieGen = false;
