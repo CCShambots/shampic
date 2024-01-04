@@ -44,20 +44,14 @@ class ConnectionStatus {
       (await request.close().timeout(const Duration(seconds: 5))).statusCode :
       (await Session.get(apiBase)).statusCode;
 
-
       switch(responseCode) {
         case 200:
           //All good, ready to use
           ConnectionStatus.connected = true;
           openBrowserForCookieGen = false;
           break;
-        case 401:
-          //Have invalid cookie, need to delete and reacquire
-          //TODO:
-          break;
-        case 303:
+        default:
           //Have no cookie, redirect user to page to generate
-          print("lack of cookie; going to redirect");
           if(!openBrowserForCookieGen) {
             await launchUrl(url);
           }
