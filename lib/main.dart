@@ -31,7 +31,7 @@ class ConnectionStatus {
       prefs.setString("api", apiBase);
     }
 
-    var url = Uri.parse(apiBase);
+    var url = Uri.parse("$apiBase/code");
 
     try {
       var client = HttpClient();
@@ -242,13 +242,16 @@ class _BottomNavigationState extends State<BottomNavigation> {
                       cookieModalOpen = false;
                       showCookieModal = false;
                     });
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
 
+                    String api = prefs.getString("api") ?? "";
 
-                    Uri url = Uri.parse("${apiBase.replaceAll("/protected", "")}/auth/$code/$email");
+                    Uri url = Uri.parse("${api.replaceAll("/protected", "")}/auth/$code/$email");
 
                     http.Response resp = await http.get(url);
-                    SharedPreferences prefs = await SharedPreferences.getInstance();
                     prefs.setString("jwt", resp.body);
+
+                    Session.updateCookie();
 
                     if(mounted) {
                       Navigator.pop(context);
