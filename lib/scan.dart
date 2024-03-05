@@ -7,7 +7,7 @@ import 'package:vibration/vibration.dart';
 
 
 class Scan extends StatefulWidget {
-  const Scan({Key? key}) : super(key: key);
+  const Scan({super.key});
 
   @override
   ScanState createState() =>

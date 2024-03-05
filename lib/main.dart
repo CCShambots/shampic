@@ -189,7 +189,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   ];
 
   void onItemTapped(int index) {
-    pageViewController.animateToPage(index, duration: Duration(milliseconds: 100), curve: Curves.easeInOut);
+    pageViewController.animateToPage(index, duration: const Duration(milliseconds: 100), curve: Curves.easeInOut);
   }
 
   @override
