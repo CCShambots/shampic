@@ -97,6 +97,7 @@ class PhotoState extends State<Photo> {
                     maxLength: 4,
                     keyboardType: TextInputType.number,
                   ),
+                  Text("Year: $year (if wrong scan a code)"),
                   teamHasImage ?
                   const Text("Team Has a Photo!",
                       style: TextStyle(color: Colors.green)) :
