@@ -6,6 +6,8 @@
     <string>Access the Camera to Scan QR Codes and Take Robot Photos.</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Access the Camera to Scan QR Codes and Take Robot Photos.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Access your photos to upload a chosen photo as an alternative to taking photos live</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
