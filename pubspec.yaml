@@ -33,6 +33,7 @@ dependencies:
   url_launcher: ^6.2.2
   image_picker: ^1.0.7
   flutter_image_compress: ^2.1.0
+  curved_labeled_navigation_bar: ^2.0.2
 
 
 dev_dependencies:

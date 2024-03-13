@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
+import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -307,21 +309,24 @@ class _BottomNavigationState extends State<BottomNavigation> {
           });
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-              icon: Icon(Icons.qr_code),
+      bottomNavigationBar: CurvedNavigationBar(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        color: Theme.of(context).colorScheme.inversePrimary,
+        items: const <CurvedNavigationBarItem>[
+          CurvedNavigationBarItem(
+              child: Icon(Icons.qr_code),
               label: "QR Code"
           ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.camera_alt),
+          CurvedNavigationBarItem(
+              child: Icon(Icons.camera_alt),
               label: "Home"
           ),
         ],
-        currentIndex: selectedIndex,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Theme.of(context).colorScheme.onBackground,
-        unselectedLabelStyle: TextStyle(color: Theme.of(context).colorScheme.onBackground),
+        animationDuration: const Duration(milliseconds: 250),
+        index: selectedIndex,
+        // selectedItemColor: Theme.of(context).colorScheme.primary,
+        // unselectedItemColor: Theme.of(context).colorScheme.onBackground,
+        // unselectedLabelStyle: TextStyle(color: Theme.of(context).colorScheme.onBackground),
         onTap: onItemTapped,
       ),
     );
