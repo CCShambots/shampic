@@ -324,9 +324,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
         ],
         animationDuration: const Duration(milliseconds: 250),
         index: selectedIndex,
-        // selectedItemColor: Theme.of(context).colorScheme.primary,
-        // unselectedItemColor: Theme.of(context).colorScheme.onBackground,
-        // unselectedLabelStyle: TextStyle(color: Theme.of(context).colorScheme.onBackground),
         onTap: onItemTapped,
       ),
     );
