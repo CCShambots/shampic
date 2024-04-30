@@ -1,7 +1,9 @@
 app-key=N49N
 build-type=publication
-flutter=3.16.5
+flutter=3.19.6
 minimal-ios-version=14.0
+app-version=1.8.2
+build-number=17
 mode=release
 target=lib/main.dart
 tunnel-host=localhost
